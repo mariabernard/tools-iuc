@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<!--
+# Copyright (C) 2015 INRA
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+    <head>
+        <title>Denovo Map Statistics</title>
+        <meta charset="UTF-8">
+        <meta name="version" content="1.0.0">
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.6/css/jquery.dataTables.css"></link>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"></link>
+        <style type="text/css">
+            #js-alert {
+                width: 90%;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            #content {
+                width: 90%;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            .clear {
+                clear: both;
+                height: 0px;
+                width: 100%;
+                float: none !important;
+            }
+        </style>
+        <!-- JS -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="http://code.highcharts.com/4.1.4/highcharts.js"></script>
+        <script type="text/javascript" src="http://code.highcharts.com/4.1.4/modules/exporting.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            /*
+             * HTMLTable.js 0.1.0 - HTMLTable Library
+             *
+             * Copyright (c) 2015 Escudie Frederic
+             * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
+             */
+            function HTMLtable(e){var t,r,n=e,a=";";this.deleteColumns=function(e){for(var a=n.getElementsByTagName("tr"),o=0;o<a.length;o++){s=0;var i=a[o].getElementsByTagName("td");0==i.length&&(i=a[o].getElementsByTagName("th"));for(var v=0,s=0;s<t[1];s++)if(!r[o][s]){var f=i[v].getAttribute("colspan");if(null!=f)for(var m=0;f>m;m++){if(in_array(s+m,e)){var u=i[v].getAttribute("colspan");u-1==0?i[v].removeAttribute("colspan"):i[v].setAttribute("colspan",u-1)}if(null==i[v].getAttribute("colspan")){var h=i[v];a[o].removeChild(h),v--}}else if(in_array(s,e)){var h=i[v];a[o].removeChild(h),v--}v++}}l(),g()},this.filter=function(e,a){var l=new RegExp(e),g=new Array;null!=a&&a||(g.c0=!0);for(var o=n.getElementsByTagName("tr"),i=0;i<o.length;i++){f=0;var v=o[i].getElementsByTagName("td");if(0!=v.length)for(var s=0,f=0;f<t[1];f++)r[i][f]||(l.test(v[s].innerHTML)&&(g["c"+f]=!0),s++)}for(var m=new Array,u=0;u<t[1];u++)void 0===g["c"+u]&&m.push(u);this.deleteColumns(m)},this.getModel=function(){return n};var l=function(){for(var e=0,r=0,a=n.getElementsByTagName("tr"),l=0;l<a.length;l++){var g=0;e++;var o=a[l].getElementsByTagName("td");0==o.length&&(o=a[l].getElementsByTagName("th"));for(var i=0;i<o.length;i++){var v=o[i].getAttribute("colspan");g+=null==v?1:parseInt(v)}g>r&&(r=g)}t=new Array(2),t[0]=e,t[1]=r},g=function(){r=new Array(t[0]);for(var e=0;e<t[0];e++){r[e]=new Array(t[1]);for(var a=0;a<t[1];a++)r[e][a]=!1}for(var l=n.getElementsByTagName("tr"),g=0;g<l.length;g++){v=0;var o=l[g].getElementsByTagName("td");0==o.length&&(o=l[g].getElementsByTagName("th"));for(var i=0,v=0;v<t[1];v++)if(!r[g][v]){var s=0,f=0,m=o[i].getAttribute("rowspan");null!=m&&(s=parseInt(m)-1);var u=o[i].getAttribute("colspan");null!=u&&(f=parseInt(u)-1);for(var h=s;h>=0;h--)for(var y=f;y>=0;y--)(0!=h||0!=y)&&(r[g+h][v+y]=!0);i++}}};this.replace=function(e,a,l){var g=new RegExp(e);null==a&&(a=""),null==l&&(l="");for(var o=n.getElementsByTagName("tr"),i=0;i<o.length;i++){f=0;var v=o[i].getElementsByTagName("td");if(0!=v.length)for(var s=0,f=0;f<t[1];f++)if(!r[i][f]){var m=g.exec(v[s].innerHTML);null!=m&&(void 0===m[1]&&(m[1]=""),v[s].innerHTML=a+m[1]+l),s++}}},this.toCSV=function(){for(var e="",l=n.getElementsByTagName("tr"),g=0;g<l.length;g++){var o=l[g].getElementsByTagName("td");0==o.length&&(o=l[g].getElementsByTagName("th"));for(var i=0,v=0;v<t[1];v++)r[g][v]||(e+=o[i].innerHTML,i++),e+=a;e=e.substr(0,e.length-1)+"\n"}return e},l(),console.log(t),g(),console.log(r)}var in_array=function(e,t){for(var r in t)if(t[r]==e)return!0;return!1};
+            
+            /*
+             * dataTableExtractor.plugin.js 0.1.0 - datatableExport Library
+             *
+             * Copyright (c) 2015 Escudie Frederic
+             * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
+             */
+            !function(t){t.fn.datatableExport=function(a){var e={anchor_id:t(this).attr("id"),table_id:null,csv_separator:";",omitted_columns:[]},n=t.extend(e,a);if(!t(this).length)throw"The element where the datatableExport is called does not exist.";if(void 0==n.anchor_id)throw"The datatableExport plugin must be called on an element with id.";if(null==n.table_id)throw"You must set the table_id parameter in datatableExport plugin.";if(!t("#"+n.table_id))throw"The datatable '#"+n.table_id+"' cannot be retieve in DOM.";return this.each(function(){var a=t(this);a.on("click",function(){t.fn.datatableExport.csv(n.anchor_id,n.table_id,n.csv_separator,n.omitted_columns)})})},t.fn.datatableExport.cleanCellMarkup=function(a,e){t.parseHTML(e);t("#"+a).append('<div class="hidden data-tmp">'+e+"</div>"),t("#"+a+" .data-tmp").find("input").each(function(){var a="";a=t(this).is(":checkbox")?t(this).is(":checked")?"true":"false":t(this).val(),t(this).replaceWith(a)});var n=t("#"+a+" .data-tmp").text();return t("#"+a+" .data-tmp").remove(),n},t.fn.datatableExport.csv=function(a,e,n,i){var l="",r=t("#"+e).DataTable(),d=t("#"+e+" thead")[0],o=new HTMLtable(d.cloneNode(!0));o.deleteColumns(i),l+=o.toCSV();var c=r.rows().data();t.each(c,function(e,n){for(var r="",d=0;d<n.length;d++)-1==t.inArray(d,i)&&(r+='"'+t.fn.datatableExport.cleanCellMarkup(a,n[d])+'";');""!=r&&(r=r.slice(0,-1)),l+=r+"\n"}),t("#"+a+"-extract-csv").length||t("#"+a).append('<a id="'+a+'-extract-csv" href="data:text/csv;charset=UTF-8,'+encodeURI(l)+'" download="data.csv" style="display:none;"></a>'),t("#"+a+"-extract-csv")[0].click()}}(jQuery);
+        </script>
+        <script type="text/javascript">
+            /**
+             * Returns the string representation of the number. 
+             * @param pValue {Float} The number to process.
+             * @return {String} The string representation (example: 12856892.11111 => 12,856,892.11).
+             */
+            var numberDisplay = function( pValue ){
+                var new_val = "" ;
+                if( ("" + pValue + "").indexOf(".") != -1 ){
+                    new_val = pValue.toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g, '$1,');
+                } else {
+                    new_val = pValue.toFixed().replace(/(\d)(?=(\d{3})+\b)/g, '$1,');
+                }
+                return new_val ;
+            }
+            
+            /**
+             * Returns hash use to init HightChart line. 
+             * @param pTitle {String} The title of the chart.
+             * @param pXTitle {String} The xAxis title.
+             * @param pYTitle {String} The yAxis title.
+             * @param pXCategories {Array} x scale labels.
+             * @param pData {Array} The HightChart series.
+             * @return {Hash} Parameters to use in Highchart's constructor.
+             */
+            var lineplot_param = function(pTitle, pXTitle, pYTitle, pXCategories, pData) {
+                return {
+                    chart: {
+                        type: 'line'
+                    },
+                    title: {
+                        text: pTitle
+                    },
+                    xAxis: {
+                        title: {
+                            text: pXTitle
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: pYTitle
+                        }
+                    },
+                    series: pData,
+                    tooltip: {
+                        formatter:function() {
+                            tooltip_head = '<b>Length ' + this.x + 'nt</b>' ;
+                            tooltip_body = '' ;
+                            for( var i=0 ; i<this.points.length ; i++) {
+                                tooltip_body += '' +
+                                    '<tr>' +
+                                    '    <td style="color:' + this.points[i].series.color +'">' + this.points[i].series.name + ': </td>' +
+                                    '    <td> ' + numberDisplay(this.points[i].point.y) + ' </td>' +
+                                    '    <td> seq</td>' +
+                                    '</tr>' ;
+                            }
+                            return tooltip_head + '<table>' + tooltip_body + '</table>' ;
+                        },
+                        shared: true,
+                        useHTML: true
+                    },
+                    legend: {
+                        enabled: true
+                    },
+                    credits: {
+                        enabled: false
+                    }
+                };
+            }
+
+            /**
+             * Returns hash use to init HightChart column. 
+             * @param pTitle {String} The title of the chart.
+             * @param pYTitle {String} The yAxis title.
+             * @param pCategories {Array} x scale labels.
+             * @param pSeries {Array} The HightChart series.
+             * @param unity {String} Unity used in tooltip.
+             * @return {Hash} Parameters to use in Highchart's constructor.
+             */           
+            var histogram_param = function( pTitle, pYTitle, pCategories, pSeries, unity ) {
+                var param = {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: pTitle
+                    },
+                    xAxis: {
+                        categories: pCategories,
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: pYTitle
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y} ' + unity + '</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        column: {
+                            pointPadding: 0.2,
+                            borderWidth: 0
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: pSeries
+                };
+                
+                return param ;
+            }
+            
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //
+            // Data
+            //
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            var ustacks_categories = ### USTACKS_CATEGORIES ###
+            /* Example:
+                ["Nb used reads", "Nb clusters", "Nb validated clusters","Nb reads clustered","Nb secondary reads clustered", "Mean cluster coverage", "Nb polymorphic clusters","Nb reads on polymorphic clusteres","Mean polymorphic cluster coverage"];
+            */
+            var ustacks_by_sample = ### USTACKS_DATA ###
+            /* Example:
+                {
+                'f0_female': [29062, 46523, 45709, 292739, 65160, 6.4, 4990, 81392, 16.31], 
+                'f0_male': [32494, 264529, 259371, 1522232, 297136, 5.87, 21584, 371962, 17.23]
+            };
+            */
+            
+            
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //
+            // Main
+            //
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /**
+             * Disables/enables buttons in datatable.
+             */
+            var updateButtonState = function(){
+                $("#display-spl-lengths").removeClass( "disabled" );
+                if( $('input[id^="ustacksBySample-chk-"]:checked').length == 0 ){
+                    $("#display-spl-lengths").addClass( "disabled" );
+                }
+            }
+            
+            /**
+             * Draws the bar chart that represents the total number of sequences after each filter. 
+             */
+             var summaryLoad = function(){
+                 var sortUstacks = new Array();
+                 for (var spl_name in ustacks_by_sample){
+                     sortUstacks.push({"sample":spl_name,"nb_clust":ustacks_by_sample[spl_name][2]});
+                 }
+                 sortUstacks.sort(function(a,b){return a.val - b.val});
+
+
+                 var samples = new Array();
+                 var global_data = new Array();
+                 for (var idx in sortUstacks){
+                     samples.push(sortUstacks[idx]["sample"]);
+                     global_data.push(sortUstacks[idx]["nb_clust"]);
+                 }
+                 var global_series = [{ name: 'Nb loci', data: global_data }];
+                 $('#ustacks-summary').highcharts( histogram_param('Ustacks summary', 'Nb loci', samples, global_series, 'loci') );
+             }
+
+            /**
+             * Set the table that represents by sample the number of sequences after each filter. 
+             */
+            var sampleDetailsLoad = function(){
+                // Table titles
+                var titles = [ '<input id="ustacksBySample-check-all" type="checkbox" value="1">', "Samples" ];
+                for( var rank = 0 ; rank < ustacks_categories.length ; rank++ ){
+                    titles.push( ustacks_categories[rank] );
+                }
+                $('#ustacksBySample-table thead').append( '<tr><th>' + titles.join("</th><th>") + '</th></tr>' );
+                $('#ustacksBySample-table .title').attr( "colspan", titles.length );
+                $('#ustacksBySample-table tfoot th').each(function(){
+                    $(this).attr( "colspan", titles.length );
+                });
+                
+                // Table data
+                for( var sample_name in ustacks_by_sample ){
+                    var sample_data = ['<input id="ustacksBySample-chk-' + sample_name + '" type="checkbox" value="1">', sample_name] ;
+                    for( var idx = 0 ; idx < ustacks_by_sample[sample_name].length ; idx++){
+                        sample_data.push( numberDisplay(ustacks_by_sample[sample_name][idx]) );
+                    }
+                    // Add row data
+                    $('#ustacksBySample-table tbody').append( '<tr><td>' + sample_data.join("</td><td>") + '</td></tr>' );
+                }
+                
+                // Buttons enable/disable management
+                $('input[id^="ustacksBySample-check-all"]').on( 'change', updateButtonState );
+                $('input[id^="ustacksBySample-chk-"]').on( 'change', updateButtonState );
+                
+                // Check all management
+                $('#ustacksBySample-check-all').on('click', function (e) { // Manage check all
+                    if( $(this).is(':checked') ){
+                        $('input[id^="ustacksBySample-chk-"]').each( function(){
+                            $(this).prop( 'checked', true );
+                        });
+                    } else {
+                        $('input[id^="ustacksBySample-chk-"]').each( function(){
+                            $(this).prop( 'checked', false );
+                        });
+                    }
+                });
+                $('input[id^="ustacksBySample-chk-"]').on('change', function (e) { // Uncheck select all when uncheck one sample
+                    if( !$(this).is(':checked') && $('#ustacksBySample-check-all').is(':checked') ){
+                        $('#ustacksBySample-check-all').prop( 'checked', false );
+                    }
+                });
+                
+                // Datatable
+                $('#ustacksBySample-table').DataTable({
+                    "sDom": '<"top"<"#ustacksBySample-csv-export"><"clear">lf>rt<"bottom"ip><"clear">',
+                    'order': [[3, 'desc']],
+                    'columnDefs': [{
+                        'targets': [0],
+                        'orderable': false
+                    }],
+                    "fnDrawCallback": updateButtonState
+                });
+                // Datatable export
+                $('#ustacksBySample-csv-export').html( '<button class="btn btn-primary"><span class="glyphicon glyphicon-open-file" aria-hidden="true">CSV</span></button>' );
+                $('#ustacksBySample-csv-export').addClass( 'dataTables_filter' );
+                $('#ustacksBySample-csv-export').datatableExport({
+                    'table_id': "ustacksBySample-table"a
+                });
+            }
+            
+            $(function() {
+                // Remove alert
+                $('#js-alert').remove();
+                $('#content').removeClass("hidden");
+                
+                // Display summary
+                summaryLoad();
+                
+                // Display data by sample
+                sampleDetailsLoad();
+            });
+        </script>
+    </head>
+    <body>
+        <!-- Alert -->
+        <p id="js-alert" class="alert alert-warning">
+            javascript is needed to display data.<br />
+            If you try to view this data on galaxy please contact your administrator to authorise javascript or download the file to view.
+        </p>
+        
+        <!-- Content -->
+        <div id="content" class="hidden">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#ustacks-stat">Ustacks stat</a></li>
+                <li role="presentation"><a href="#cstacks-stat">Cstacks stat</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="ustacks-stat" role="tabpanel" class="tab-pane active">
+                    <div id="ustacks-summary"></div>
+                    <div id="filter-log">
+                        <table id="ustacksBySample-table" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="title">Ustacks by sample</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="cstacks-stat" role="tabpanel" class="tab-pane disabled"></div>
+            </div>
+        </div>
+        
+        <!-- Modals -->
+        <div class="modal" id="lengths-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Amplicons lengths</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="lengths-chart"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

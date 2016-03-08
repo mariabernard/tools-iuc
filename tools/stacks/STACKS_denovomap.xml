@@ -64,6 +64,7 @@ STACKS_denovomap.py
 --catalogalleles $catalogalleles
 --catalogtags $catalogtags
 --logfile $output
+--summary $summary
 --compress_output $output_compress
 ##additionnal outputs
 --total_output $total_output
@@ -145,8 +146,8 @@ STACKS_denovomap.py
 	</param>
 </inputs>
 <outputs>
-
     <data format="txt" name="output" label="result.log with ${tool.name} on ${on_string}" />
+    <data format="html" name="summary" label="result.html with ${tool.name} on ${on_string}" />
     <data format="txt" name="additional" label="additional file with ${tool.name}" hidden="true">
           <discover_datasets pattern="__designation_and_ext__" directory="galaxy_outputs" visible="true" />
     </data> 

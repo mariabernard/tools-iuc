@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import subprocess
 import glob
+import json
 import argparse
 from os.path import basename
 import zipfile
@@ -16,6 +17,110 @@ import gzip
 from galaxy.datatypes.checkers import *
 from stacks import *
 
+def parse_log(denovomap_log):
+    ustacks_dict=dict()
+    cstacks_dict={"evol_cat":[]}
+    FH_log = open(denovomap_log)
+    end_ustacks=False
+    for line in FH_log.readlines():
+        # USTACKS
+        if not end_ustacks:
+            if line.startswith("Identifying unique stacks;"):
+                sample = line.strip().replace("[","").replace("]","").split()[-1]
+                ustacks_dict[sample]={"Nb used reads":0}
+                continue
+            elif line.startswith("Number of utilized reads:"):
+                ustacks_dict[sample]["Nb used reads"]=int(line.strip().split()[-1])
+                continue
+        if "cstacks" in line:
+            end_ustacks=True
+        # CSTACKS
+        if line.startswith("Constructing catalog from"):
+            num_cat_ind = int(line.strip().split()[3])
+            if num_cat_ind > 2 :
+                cstacks_dict["evol_dist"]=[0]
+            continue
+        elif "loci in the catalog" in line and num_cat_ind > 2:
+            cstacks_dict["evol_dist"].append(line.split()[0])
+        # END CSTACKS
+        if "sstacks" in line:
+            return ustacks_dict, cstacks_dict
+
+def parse_ustacks(res_dir):
+    ustacks_dict=dict()
+    files=glob.glob(os.path.join(res_dir,"*tags.tsv*"))
+    for file in files:
+        if "catalog" in file:
+          continue
+        sample=os.path.basename(file).replace(".tags.tsv"," ").split()[0]
+        ustacks_dict[sample]={"Nb clusters":0, "Nb validated clusters":0,"Nb reads clustered":0, "Nb secondary reads clustered":0,"Nb polymorphic clusters":0,"Nb reads on polymorphic clustered":0}
+        FH_in=open(file)
+        
+        white=False
+        poly=False
+        for line in FH_in.readlines():
+            if line.startswith("#"):
+                continue
+            if "consensus" in line:
+                white=False
+                poly=False
+                ustacks_dict[sample]["Nb clusters"]+=1
+                if line.split()[8]!="1":
+                    white=True
+                    ustacks_dict[sample]["Nb validated clusters"]+=1
+                continue
+            if "model" in line and white and "E" in line.split()[-1]: 
+                poly=True
+                ustacks_dict[sample]["Nb polymorphic clusters"]+=1
+                continue
+            if white and not "consensus" in line and not "model" in line:
+                ustacks_dict[sample]["Nb reads clustered"]+=1
+                if poly:
+                    ustacks_dict[sample]["Nb reads on polymorphic clustered"]+=1
+                if "secondary" in line : 
+                    ustacks_dict[sample]["Nb secondary reads clustered"]+=1
+        ustacks_dict[sample]["Average cluster coverage"]=round(float(ustacks_dict[sample]["Nb reads clustered"])/ustacks_dict[sample]["Nb validated clusters"],2)
+        ustacks_dict[sample]["Average polymorphic cluster coverage"]=round(float(ustacks_dict[sample]["Nb reads on polymorphic clustered"])/ustacks_dict[sample]["Nb polymorphic clusters"],2)
+    return ustacks_dict
+
+def parse_cstacks(res_dir):
+    cstacks_dict=dict()
+    catalog_files=glob.glob(os.path.join(res_dir,"*catalog*"))
+    for file in catalog_files:
+        if "tags" in file :
+            continue
+        elif "snps" in file:
+            continue
+        elif "alleles" in file:
+            continue 
+    
+    return cstacks_dict
+
+def summarise_results( denovo_log, summary_html ):
+    Fh_tpl = open(os.path.join(CURRENT_DIR, "denovomap_tpl.html"))
+    FH_summary_tpl = open( summary_html,"w" )
+    
+    ustacks_categories = ["Nb used reads", "Nb clusters", "Nb validated clusters","Nb reads clustered","Nb secondary reads clustered", "Average cluster coverage", "Nb polymorphic clusters","Nb reads on polymorphic clustered","Average polymorphic cluster coverage"]
+    
+    ustacks_log,cstacks_log = parse_log(denovomap_log)
+    ustacks_res = parse_ustacks(os.path.dirname(denovo_log))
+    
+    ustacks_summary = dict()
+    for sample in ustacks_res:
+        ustacks_res[sample].update(ustacks_log[sample])
+        ustacks_summary[sample]=[]
+        for key in ustacks_categories:
+            ustacks_summary[sample].append(ustacks_res[sample][key])
+
+    for line in Fh_tpl.readlines():
+        if "### USTACKS_CATEGORIES ###" in line:
+            line = line.replace( "### USTACKS_CATEGORIES ###", json.dumps(ustacks_categories) )
+        if "### USTACKS_DATA ###" in line:
+            line = line.replace( "### USTACKS_CATEGORIES ###", json.dumps(ustacks_summary) ) 
+        FH_summary_tpl.write(line)
+
+    FH_summary_tpl.close()
+    Fh_tpl.close()
 
 def __main__():
 
@@ -39,6 +144,7 @@ def __main__():
     parser.add_argument('--bound_high')
     parser.add_argument('--alpha')
     parser.add_argument('--logfile')
+    parser.add_argument('--summary')
     parser.add_argument('--compress_output')
     parser.add_argument('--catalogsnps')
     parser.add_argument('--catalogalleles')
@@ -197,7 +303,8 @@ def __main__():
 
     # postprocesses
     try:
-        shutil.move('job_outputs/denovo_map.log', options.logfile)
+        summarise_results( 'job_outputs/denovo_map.log', options.summary )
+        shutil.move('job_outputs/denovo_map.log', options.logfile)        
     except:
         sys.stderr.write('Error in denovo_map execution; Please read the additional output (stdout)\n')
         sys.exit(1)
